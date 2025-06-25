@@ -1,10 +1,11 @@
-name: build
+name: build-legacy (已废弃)
 
 on:
-  push:
-    branches:
-      - 'xxf098/develop'
-      - 'xxf098/master'
+  # 已停用，请使用新的release.yml和test-build.yml
+  # push:
+  #   branches:
+  #     - 'xxf098/develop'
+  #     - 'xxf098/master'
 
 jobs:
   build:
@@ -68,4 +69,4 @@ jobs:
       run: |
         ls -thls ~/.android-cache
         ls -thla ./target/android/output/
-        echo test, and deploy your project.
+        echo test, and deploy your project. 
