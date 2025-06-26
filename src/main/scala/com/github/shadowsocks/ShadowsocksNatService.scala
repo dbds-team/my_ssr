@@ -348,14 +348,17 @@ class ShadowsocksNatService extends BaseService {
 
 
   override def startRunner(profile: Profile) = if (su == null) {
+    val self = this
     su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open(new Shell.OnShellOpenResultListener {
       override def onOpenResult(success: Boolean, reason: Int): Unit = {
-        if (success) super.startRunner(profile) else {
+        if (success) {
+          self.asInstanceOf[ShadowsocksVpnService].startRunner(profile)
+        } else {
           if (su != null) {
             su.close()
             su = null
           }
-          super.stopRunner(true, getString(R.string.nat_no_root))
+          self.asInstanceOf[ShadowsocksVpnService].stopRunner(true, self.getString(R.string.nat_no_root))
         }
       }
     })
