@@ -33,9 +33,20 @@ proguardOptions ++=
   "-keep class com.mikepenz.** { *; }" ::
   "-keep class me.dm7.barcodescanner.** { *; }" ::
   "-keep class com.google.android.gms.** { *; }" ::
+  "-keep class com.google.zxing.** { *; }" ::
+  "-keep class com.github.jorgecastilloprz.progressarc.** { *; }" ::
+  "-keep class net.glxn.qrgen.** { *; }" ::
+  "-keep class com.github.clans.** { *; }" ::
+  "-keep class com.evernote.** { *; }" ::
+  "-keep class android.widget.Space { *; }" ::
   "-keepattributes InnerClasses" ::
   "-keepattributes Signature" ::
   "-keepattributes *Annotation*" ::
+  "-keepattributes EnclosingMethod" ::
+  "-keepattributes RuntimeVisibleAnnotations" ::
+  "-keepattributes RuntimeInvisibleAnnotations" ::
+  "-keepclassmembers class * { public <init>(...); }" ::
+  "-keepclassmembers enum * { public static **[] values(); public static ** valueOf(java.lang.String); }" ::
   "-dontwarn okio.**" ::
   "-dontwarn okhttp3.**" ::
   "-dontwarn kotlin.**" ::
@@ -43,9 +54,16 @@ proguardOptions ++=
   "-dontwarn com.mikepenz.**" ::
   "-dontwarn me.dm7.barcodescanner.**" ::
   "-dontwarn com.google.android.gms.**" ::
+  "-dontwarn com.google.zxing.**" ::
+  "-dontwarn com.github.jorgecastilloprz.**" ::
+  "-dontwarn net.glxn.qrgen.**" ::
+  "-dontwarn com.github.clans.**" ::
+  "-dontwarn com.evernote.**" ::
   "-dontwarn com.j256.ormlite.**" ::
   "-dontwarn org.xbill.**" ::
   "-dontwarn javax.annotation.**" ::
+  "-dontwarn android.widget.Space" ::
+  "-ignorewarnings" ::
   Nil
 
 shrinkResources := true
