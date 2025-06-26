@@ -43,7 +43,7 @@ resConfigs := Seq("ja", "ru", "zh-rCN", "zh-rTW")
 resolvers += "Google" at "https://maven.google.com/"
 resolvers += "jitpack" at "https://jitpack.io"
 resolvers += "Maven Central" at "https://repo1.maven.org/maven2/"
-resolvers += "twofortyfouram" at "https://twofortyfouram.github.io/android-plugin-api-for-locale/"
+// resolvers += "twofortyfouram" at "https://twofortyfouram.github.io/android-plugin-api-for-locale/" // 移除，不可用
 
 libraryDependencies ++=
   "com.android.support" % "cardview-v7" % supportLibVersion ::
@@ -60,13 +60,13 @@ libraryDependencies ++=
   "com.mikepenz" % "iconics-core" % "2.8.2" ::
   "com.mikepenz" % "materialdrawer" % "5.8.1" ::
   "com.mikepenz" % "materialize" % "1.0.0" ::
-  "com.twofortyfouram" % "android-plugin-api-for-locale" % "1.0.2" ::
+  // "com.twofortyfouram" % "android-plugin-api-for-locale" % "1.0.2" :: // 暂时注释，仓库不可用
   "dnsjava" % "dnsjava" % "2.1.9" ::
-  "eu.chainfire" % "libsuperuser" % "1.0.0.201704021214" ::
+  // "eu.chainfire" % "libsuperuser" % "1.0.0.201704021214" :: // 暂时注释，仓库不可用
   "me.dm7.barcodescanner" % "zxing" % "1.9.8" ::
   "net.glxn.qrgen" % "android" % "2.0" ::
   "com.squareup.okhttp3" % "okhttp" % "4.4.1" ::
-  "com.github.PhilJay" % "MPAndroidChart" % "v3.1.0" ::
+  "com.github.PhilJay" % "MPAndroidChart" % "3.1.0" ::
   "com.google.code.gson" % "gson" % "2.8.6" ::
 Nil
 
