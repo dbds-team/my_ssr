@@ -346,6 +346,7 @@ class ShadowsocksNatService extends BaseService {
     su.addCommand((init_sb ++ http_sb).toArray)
   }
 
+
   override def startRunner(profile: Profile) = if (su == null) {
     su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open(new Shell.OnShellOpenResultListener {
       override def onOpenResult(success: Boolean, reason: Int): Unit = {
