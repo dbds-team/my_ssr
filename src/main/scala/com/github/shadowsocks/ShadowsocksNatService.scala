@@ -347,7 +347,7 @@ class ShadowsocksNatService extends BaseService {
   }
 
   override def startRunner(profile: Profile) = if (su == null)
-    su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open((_, exitCode, _) =>
+    su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open((command: String, exitCode: Int, output: String) =>
       if (exitCode == 0) super.startRunner(profile) else {
         if (su != null) {
           su.close()
