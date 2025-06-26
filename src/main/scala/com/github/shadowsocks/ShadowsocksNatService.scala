@@ -364,6 +364,7 @@ class ShadowsocksNatService extends BaseService {
     })
   }
 
+
   override def connect() {
     super.connect()
 

@@ -27,8 +27,13 @@ proguardOptions ++=
   "-keep interface okhttp3.** { *; }" ::
   "-keep class okio.** { *; }" ::
   "-keep interface okio.** { *; }" ::
+  "-keep class kotlin.jvm.functions.** { *; }" ::
+  "-keep class kotlin.** { *; }" ::
+  "-keepattributes InnerClasses" ::
+  "-keepattributes Signature" ::
   "-dontwarn okio.**" ::
   "-dontwarn okhttp3.**" ::
+  "-dontwarn kotlin.**" ::
   "-dontwarn com.google.android.gms.internal.**" ::
   "-dontwarn com.j256.ormlite.**" ::
   "-dontwarn org.xbill.**" ::
