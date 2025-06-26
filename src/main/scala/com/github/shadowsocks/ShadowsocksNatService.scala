@@ -346,15 +346,19 @@ class ShadowsocksNatService extends BaseService {
     su.addCommand((init_sb ++ http_sb).toArray)
   }
 
-  override def startRunner(profile: Profile) = if (su == null)
-    su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open((command: String, exitCode: Int, output: String) =>
-      if (exitCode == 0) super.startRunner(profile) else {
-        if (su != null) {
-          su.close()
-          su = null
+  override def startRunner(profile: Profile) = if (su == null) {
+    su = new Shell.Builder().useSU().setWantSTDERR(true).setWatchdogTimeout(10).open(new Shell.OnShellOpenResultListener {
+      override def onOpenResult(success: Boolean, reason: Int): Unit = {
+        if (success) super.startRunner(profile) else {
+          if (su != null) {
+            su.close()
+            su = null
+          }
+          super.stopRunner(true, getString(R.string.nat_no_root))
         }
-        super.stopRunner(true, getString(R.string.nat_no_root))
-      })
+      }
+    })
+  }
 
   override def connect() {
     super.connect()
