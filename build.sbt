@@ -42,7 +42,7 @@ resConfigs := Seq("ja", "ru", "zh-rCN", "zh-rTW")
 
 resolvers += "Google" at "https://maven.google.com/"
 resolvers += "jitpack" at "https://jitpack.io"
-resolvers += Resolver.mavenCentral
+resolvers += "Maven Central" at "https://repo1.maven.org/maven2/"
 resolvers += "twofortyfouram" at "https://twofortyfouram.github.io/android-plugin-api-for-locale/"
 
 libraryDependencies ++=
