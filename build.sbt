@@ -42,7 +42,8 @@ resConfigs := Seq("ja", "ru", "zh-rCN", "zh-rTW")
 
 resolvers += "Google" at "https://maven.google.com/"
 resolvers += "jitpack" at "https://jitpack.io"
-resolvers += Resolver.jcenterRepo
+resolvers += Resolver.mavenCentral
+resolvers += "twofortyfouram" at "https://twofortyfouram.github.io/android-plugin-api-for-locale/"
 
 libraryDependencies ++=
   "com.android.support" % "cardview-v7" % supportLibVersion ::
