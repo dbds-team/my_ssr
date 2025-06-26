@@ -29,16 +29,23 @@ proguardOptions ++=
   "-keep interface okio.** { *; }" ::
   "-keep class kotlin.jvm.functions.** { *; }" ::
   "-keep class kotlin.** { *; }" ::
+  "-keep class com.github.mikephil.charting.** { *; }" ::
+  "-keep class com.mikepenz.** { *; }" ::
+  "-keep class me.dm7.barcodescanner.** { *; }" ::
+  "-keep class com.google.android.gms.** { *; }" ::
   "-keepattributes InnerClasses" ::
   "-keepattributes Signature" ::
+  "-keepattributes *Annotation*" ::
   "-dontwarn okio.**" ::
   "-dontwarn okhttp3.**" ::
   "-dontwarn kotlin.**" ::
-  "-dontwarn com.google.android.gms.internal.**" ::
+  "-dontwarn com.github.mikephil.charting.**" ::
+  "-dontwarn com.mikepenz.**" ::
+  "-dontwarn me.dm7.barcodescanner.**" ::
+  "-dontwarn com.google.android.gms.**" ::
   "-dontwarn com.j256.ormlite.**" ::
   "-dontwarn org.xbill.**" ::
-  "-dontwarn javax.annotation.Nullable" ::
-  "-dontwarn javax.annotation.ParametersAreNonnullByDefault" ::
+  "-dontwarn javax.annotation.**" ::
   Nil
 
 shrinkResources := true
