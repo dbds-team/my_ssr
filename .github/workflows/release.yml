@@ -163,8 +163,8 @@ jobs:
         ls -lh "$NEW_NAME"
         
         # 将32位APK移到临时目录
-        mkdir -p ~/apk-builds
-        cp "$NEW_NAME" ~/apk-builds/
+        mkdir -p $HOME/apk-builds
+        cp "$NEW_NAME" $HOME/apk-builds/
         
         # 清理target目录准备下一次构建
         cd ../../../
@@ -223,18 +223,18 @@ jobs:
         ls -lh "$NEW_NAME"
         
         # 将64位APK复制到临时目录
-        cp "$NEW_NAME" ~/apk-builds/
+        cp "$NEW_NAME" $HOME/apk-builds/
         
         # 准备所有APK文件路径
-        cd ~/apk-builds/
-        echo "all_apks=$(pwd)/*.apk" >> $GITHUB_OUTPUT
+        cd $HOME/apk-builds/
+        echo "apk_builds_dir=$HOME/apk-builds" >> $GITHUB_OUTPUT
         ls -lh *.apk
         
     - name: 📦 上传APK到Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: shadowsocksr-v2ray-${{ steps.version.outputs.version }}
-        path: ~/apk-builds/*.apk
+        path: ${{ env.HOME }}/apk-builds/*.apk
         retention-days: 30
         
     - name: 📊 生成Release说明
@@ -260,8 +260,8 @@ jobs:
         - **构建分支**: ${GITHUB_REF#refs/tags/}
         
         ### 📦 下载信息
-        - **32位APK**: ${{ steps.rename32.outputs.apk32_name }} ($(ls -lh ~/apk-builds/${{ steps.rename32.outputs.apk32_name }} | awk '{print $5}'))
-        - **64位APK**: ${{ steps.rename64.outputs.apk64_name }} ($(ls -lh ~/apk-builds/${{ steps.rename64.outputs.apk64_name }} | awk '{print $5}'))
+        - **32位APK**: ${{ steps.rename32.outputs.apk32_name }} ($(ls -lh $HOME/apk-builds/${{ steps.rename32.outputs.apk32_name }} | awk '{print $5}'))
+        - **64位APK**: ${{ steps.rename64.outputs.apk64_name }} ($(ls -lh $HOME/apk-builds/${{ steps.rename64.outputs.apk64_name }} | awk '{print $5}'))
         
         ### 📝 更新内容
         EOF
@@ -279,8 +279,8 @@ jobs:
         name: ShadowsocksR V2Ray ${{ steps.version.outputs.version }}
         body_path: release_notes.md
         files: |
-          ~/apk-builds/${{ steps.rename32.outputs.apk32_name }}
-          ~/apk-builds/${{ steps.rename64.outputs.apk64_name }}
+          ${{ steps.rename64.outputs.apk_builds_dir }}/${{ steps.rename32.outputs.apk32_name }}
+          ${{ steps.rename64.outputs.apk_builds_dir }}/${{ steps.rename64.outputs.apk64_name }}
         draft: false
         prerelease: ${{ contains(steps.version.outputs.version, 'beta') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'rc') }}
         generate_release_notes: false
