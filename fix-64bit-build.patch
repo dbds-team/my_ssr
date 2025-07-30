@@ -1,0 +1,27 @@
+diff --git a/src/main/jni/Android.mk b/src/main/jni/Android.mk
+index 1234567..abcdefg 100644
+--- a/src/main/jni/Android.mk
++++ b/src/main/jni/Android.mk
+@@ -590,6 +590,14 @@ include $(BUILD_STATIC_LIBRARY)
+ 
+ ########################################################
+ ## libproxychains4
++## Note: This library has compatibility issues with 64-bit builds
++## Temporarily disable for arm64-v8a and x86_64
++########################################################
++
++ifneq ($(filter $(TARGET_ARCH_ABI),arm64-v8a x86_64),)
++# Skip building libproxychains4 for 64-bit architectures
++$(info Skipping libproxychains4 for $(TARGET_ARCH_ABI))
++else
+ ########################################################
+ 
+ include $(CLEAR_VARS)
+@@ -617,6 +625,7 @@ LOCAL_STATIC_LIBRARIES := libancillary
+ LOCAL_LDLIBS := -ldl -llog
+ 
+ include $(BUILD_SHARED_LIBRARY)
++endif
+ 
+ # Import cpufeatures
+ $(call import-module,android/cpufeatures)

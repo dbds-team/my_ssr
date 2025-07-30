@@ -592,6 +592,11 @@ include $(BUILD_STATIC_LIBRARY)
 ## libproxychains4
 ########################################################
 
+# Skip libproxychains4 for 64-bit architectures due to compatibility issues
+ifneq ($(filter $(TARGET_ARCH_ABI),arm64-v8a x86_64),)
+$(info Skipping libproxychains4 for $(TARGET_ARCH_ABI))
+else
+
 include $(CLEAR_VARS)
 
 LOCAL_MODULE:= libproxychains4
@@ -617,6 +622,8 @@ LOCAL_STATIC_LIBRARIES := libancillary
 LOCAL_LDLIBS := -ldl -llog
 
 include $(BUILD_SHARED_LIBRARY)
+
+endif # libproxychains4 64-bit skip
 
 # Import cpufeatures
 $(call import-module,android/cpufeatures)

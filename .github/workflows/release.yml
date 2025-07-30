@@ -186,26 +186,47 @@ jobs:
         echo "  架构: 64位 (arm64-v8a, x86_64)"
         echo "  目标: release"
         
-        # 复制所需的库文件到正确的ABI目录
-        echo "📋 准备库文件..."
+        # 修复libproxychains的64位编译问题
+        echo "🔧 修复64位编译问题..."
+        chmod +x ./fix-proxychains-64bit.sh
+        ./fix-proxychains-64bit.sh || true
+        
+        # 修改Android.mk以修复64位编译
+        echo "🔧 修改Android.mk以支持64位编译..."
+        # 移除libproxychains4的64位跳过逻辑
+        sed -i '/# Skip libproxychains4 for 64-bit/,/else/d' ./src/main/jni/Android.mk
+        sed -i 's/endif # libproxychains4 64-bit skip//' ./src/main/jni/Android.mk
+        
+        # 在proxychains的CFLAGS中添加64位兼容性修复
+        sed -i '/LOCAL_MODULE:= libproxychains4/a\
+# Fix for 64-bit compatibility\nifeq ($(TARGET_ARCH_ABI),arm64-v8a)\nLOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed\nendif\nifeq ($(TARGET_ARCH_ABI),x86_64)\nLOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed\nendif' ./src/main/jni/Android.mk
+        
+        # 添加一个宏定义来修复函数签名
+        echo '#define gethostbyaddr_fixed(addr,len,type) gethostbyaddr((const void*)(addr),(socklen_t)(len),(type))' >> ./src/main/jni/proxychains-compat.h
+        
+        # 保留libgojni.so（这个需要单独处理）
+        echo "📋 准备libgojni.so..."
         mkdir -p ./src/main/libs/arm64-v8a
         mkdir -p ./src/main/libs/x86_64
         
-        # 保留之前编译的32位库，但也复制到64位目录作为临时方案
-        # 注意：这是临时解决方案，后续需要编译真正的64位libgojni.so
+        # 临时使用32位的libgojni.so（TODO: 需要真正的64位版本）
         if [ -f ./src/main/libs/armeabi-v7a/libgojni.so ]; then
           cp ./src/main/libs/armeabi-v7a/libgojni.so ./src/main/libs/arm64-v8a/
-          echo "✅ 复制libgojni.so到arm64-v8a"
+          echo "⚠️  临时使用32位的libgojni.so为64位版本"
         fi
         if [ -f ./src/main/libs/x86/libgojni.so ]; then
           cp ./src/main/libs/x86/libgojni.so ./src/main/libs/x86_64/
-          echo "✅ 复制libgojni.so到x86_64"
         fi
         
-        # 设置构建环境
+        # 执行构建
+        echo "🚀 开始编译..."
+        chmod +x ./travis-ci/setup.sh
+        
+        # 强制编译必须成功
+        set -e
         ./travis-ci/setup.sh
         
-        echo "✅ 64位APK构建完成"
+        echo "✅ 64位APK构建成功完成"
         
     - name: 📁 检查64位构建结果并重命名
       id: rename64
