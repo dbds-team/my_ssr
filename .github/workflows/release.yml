@@ -198,8 +198,17 @@ jobs:
         sed -i 's/endif # libproxychains4 64-bit skip//' ./src/main/jni/Android.mk
         
         # 在proxychains的CFLAGS中添加64位兼容性修复
-        sed -i '/LOCAL_MODULE:= libproxychains4/a\
-# Fix for 64-bit compatibility\nifeq ($(TARGET_ARCH_ABI),arm64-v8a)\nLOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed\nendif\nifeq ($(TARGET_ARCH_ABI),x86_64)\nLOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed\nendif' ./src/main/jni/Android.mk
+        cat >> ./src/main/jni/Android.mk.patch << 'EOF'
+# Fix for 64-bit compatibility
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+LOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed
+endif
+ifeq ($(TARGET_ARCH_ABI),x86_64)
+LOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed
+endif
+EOF
+        # 应用补丁
+        sed -i '/LOCAL_MODULE:= libproxychains4/r ./src/main/jni/Android.mk.patch' ./src/main/jni/Android.mk
         
         # 添加一个宏定义来修复函数签名
         echo '#define gethostbyaddr_fixed(addr,len,type) gethostbyaddr((const void*)(addr),(socklen_t)(len),(type))' >> ./src/main/jni/proxychains-compat.h
