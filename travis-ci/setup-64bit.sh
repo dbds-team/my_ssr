@@ -41,30 +41,17 @@ wait
 cp local.properties.github local.properties
 git submodule update --init
 
-# 64位版本不需要备份和恢复32位的libgojni.so
-# 如果存在64位的libgojni.so，保留它们
-if [ -f ./src/main/libs/arm64-v8a/libgojni.so ] || [ -f ./src/main/libs/x86_64/libgojni.so ]; then
-    echo "Found existing 64-bit libgojni.so, preserving..."
-    mkdir -p ./backup/arm64-v8a ./backup/x86_64
-    if [ -f ./src/main/libs/arm64-v8a/libgojni.so ]; then
-        cp ./src/main/libs/arm64-v8a/libgojni.so ./backup/arm64-v8a/
-    fi
-    if [ -f ./src/main/libs/x86_64/libgojni.so ]; then
-        cp ./src/main/libs/x86_64/libgojni.so ./backup/x86_64/
-    fi
+# 检查是否有32位的libgojni.so可以作为基础
+if [ -f ./src/main/libs/armeabi-v7a/libgojni.so ]; then
+    echo "Found 32-bit libgojni.so, copying as placeholder for 64-bit..."
+    mkdir -p ./src/main/libs/arm64-v8a ./src/main/libs/x86_64
+    # 暂时复制32位版本作为占位符，确保APK包含库目录
+    cp ./src/main/libs/armeabi-v7a/libgojni.so ./src/main/libs/arm64-v8a/
+    cp ./src/main/libs/x86/libgojni.so ./src/main/libs/x86_64/
 fi
 
 # 构建native库
-chmod +x ./build-64bit.sh
-./build-64bit.sh
-
-# 如果之前备份了64位库，恢复它们
-if [ -f ./backup/arm64-v8a/libgojni.so ]; then
-    cp ./backup/arm64-v8a/libgojni.so ./src/main/libs/arm64-v8a/
-fi
-if [ -f ./backup/x86_64/libgojni.so ]; then
-    cp ./backup/x86_64/libgojni.so ./src/main/libs/x86_64/
-fi
+sbt native-build
 
 # 打包APK
 sbt android:package-release

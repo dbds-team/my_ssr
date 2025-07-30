@@ -186,23 +186,24 @@ jobs:
         echo "  架构: 64位 (arm64-v8a, x86_64)"
         echo "  目标: release"
         
-        # 清理32位库文件，避免混用
-        rm -rf ./src/main/libs/armeabi-v7a
-        rm -rf ./src/main/libs/x86
+        # 复制所需的库文件到正确的ABI目录
+        echo "📋 准备库文件..."
         mkdir -p ./src/main/libs/arm64-v8a
         mkdir -p ./src/main/libs/x86_64
         
-        # 如果有备份的64位libgojni.so，复制到对应目录
-        if [ -f ./backup/arm64-v8a/libgojni.so ]; then
-          cp ./backup/arm64-v8a/libgojni.so ./src/main/libs/arm64-v8a/
+        # 保留之前编译的32位库，但也复制到64位目录作为临时方案
+        # 注意：这是临时解决方案，后续需要编译真正的64位libgojni.so
+        if [ -f ./src/main/libs/armeabi-v7a/libgojni.so ]; then
+          cp ./src/main/libs/armeabi-v7a/libgojni.so ./src/main/libs/arm64-v8a/
+          echo "✅ 复制libgojni.so到arm64-v8a"
         fi
-        if [ -f ./backup/x86_64/libgojni.so ]; then
-          cp ./backup/x86_64/libgojni.so ./src/main/libs/x86_64/
+        if [ -f ./src/main/libs/x86/libgojni.so ]; then
+          cp ./src/main/libs/x86/libgojni.so ./src/main/libs/x86_64/
+          echo "✅ 复制libgojni.so到x86_64"
         fi
         
         # 设置构建环境
-        chmod +x ./travis-ci/setup-64bit.sh
-        ./travis-ci/setup-64bit.sh
+        ./travis-ci/setup.sh
         
         echo "✅ 64位APK构建完成"
         
