@@ -109,66 +109,66 @@ jobs:
         echo "keyPassword=$ANDROID_KEY_PASSWORD" >> local.properties
         echo "✅ 签名配置文件创建完成"
         
-    - name: 🔧 初始化Application.mk (32位版本)
-      run: |
-        echo "📝 创建Application.mk配置 (32位)..."
-        echo -e "APP_ABI      			:= armeabi-v7a x86\nAPP_PLATFORM 			:= android-16\nAPP_STL      			:= stlport_static\nNDK_TOOLCHAIN_VERSION 	:= clang\n" > './src/main/jni/Application.mk'
-        echo "✅ Application.mk创建完成 (32位)"
-        cat './src/main/jni/Application.mk'
+    # - name: 🔧 初始化Application.mk (32位版本)
+    #   run: |
+    #     echo "📝 创建Application.mk配置 (32位)..."
+    #     echo -e "APP_ABI      			:= armeabi-v7a x86\nAPP_PLATFORM 			:= android-16\nAPP_STL      			:= stlport_static\nNDK_TOOLCHAIN_VERSION 	:= clang\n" > './src/main/jni/Application.mk'
+    #     echo "✅ Application.mk创建完成 (32位)"
+    #     cat './src/main/jni/Application.mk'
         
-    - name: 🏗️ 构建32位APK
-      run: |
-        echo "🚀 开始构建32位Release APK..."
-        echo "📋 构建信息:"
-        echo "  版本: ${{ steps.version.outputs.version }}"
-        echo "  项目: shadowsocksr-v2ray"
-        echo "  架构: 32位 (armeabi-v7a, x86)"
-        echo "  目标: release"
+    # - name: 🏗️ 构建32位APK
+    #   run: |
+    #     echo "🚀 开始构建32位Release APK..."
+    #     echo "📋 构建信息:"
+    #     echo "  版本: ${{ steps.version.outputs.version }}"
+    #     echo "  项目: shadowsocksr-v2ray"
+    #     echo "  架构: 32位 (armeabi-v7a, x86)"
+    #     echo "  目标: release"
+    #     
+    #     # 设置构建环境
+    #     chmod +x ./travis-ci/setup.sh
+    #     ./travis-ci/setup.sh
+    #     
+    #     echo "✅ 32位APK构建完成"
         
-        # 设置构建环境
-        chmod +x ./travis-ci/setup.sh
-        ./travis-ci/setup.sh
-        
-        echo "✅ 32位APK构建完成"
-        
-    - name: 📁 检查32位构建结果并重命名
-      id: rename32
-      run: |
-        echo "📋 32位构建输出目录内容:"
-        ls -la ./target/android/output/ || echo "输出目录不存在"
-        
-        echo "📝 重命名32位APK文件..."
-        cd ./target/android/output/
-        
-        # 查找release apk文件
-        if [ -f "shadowsocksr-v2ray-release.apk" ]; then
-          OLD_NAME="shadowsocksr-v2ray-release.apk"
-        elif [ -f "app-release.apk" ]; then
-          OLD_NAME="app-release.apk"
-        else
-          echo "❌ 未找到release APK文件"
-          ls -la
-          exit 1
-        fi
-        
-        # 新文件名: 项目名+版本号+架构+.apk
-        NEW_NAME="shadowsocksr-v2ray-${{ steps.version.outputs.version }}-arm32.apk"
-        
-        mv "$OLD_NAME" "$NEW_NAME"
-        echo "✅ 32位APK文件重命名: $OLD_NAME -> $NEW_NAME"
-        echo "apk32_name=$NEW_NAME" >> $GITHUB_OUTPUT
-        echo "apk32_path=$(pwd)/$NEW_NAME" >> $GITHUB_OUTPUT
-        
-        # 显示最终文件信息
-        ls -lh "$NEW_NAME"
-        
-        # 将32位APK移到临时目录
-        mkdir -p $HOME/apk-builds
-        cp "$NEW_NAME" $HOME/apk-builds/
-        
-        # 清理target目录准备下一次构建
-        cd ../../../
-        rm -rf ./target
+    # - name: 📁 检查32位构建结果并重命名
+    #   id: rename32
+    #   run: |
+    #     echo "📋 32位构建输出目录内容:"
+    #     ls -la ./target/android/output/ || echo "输出目录不存在"
+    #     
+    #     echo "📝 重命名32位APK文件..."
+    #     cd ./target/android/output/
+    #     
+    #     # 查找release apk文件
+    #     if [ -f "shadowsocksr-v2ray-release.apk" ]; then
+    #       OLD_NAME="shadowsocksr-v2ray-release.apk"
+    #     elif [ -f "app-release.apk" ]; then
+    #       OLD_NAME="app-release.apk"
+    #     else
+    #       echo "❌ 未找到release APK文件"
+    #       ls -la
+    #       exit 1
+    #     fi
+    #     
+    #     # 新文件名: 项目名+版本号+架构+.apk
+    #     NEW_NAME="shadowsocksr-v2ray-${{ steps.version.outputs.version }}-arm32.apk"
+    #     
+    #     mv "$OLD_NAME" "$NEW_NAME"
+    #     echo "✅ 32位APK文件重命名: $OLD_NAME -> $NEW_NAME"
+    #     echo "apk32_name=$NEW_NAME" >> $GITHUB_OUTPUT
+    #     echo "apk32_path=$(pwd)/$NEW_NAME" >> $GITHUB_OUTPUT
+    #     
+    #     # 显示最终文件信息
+    #     ls -lh "$NEW_NAME"
+    #     
+    #     # 将32位APK移到临时目录
+    #     mkdir -p $HOME/apk-builds
+    #     cp "$NEW_NAME" $HOME/apk-builds/
+    #     
+    #     # 清理target目录准备下一次构建
+    #     cd ../../../
+    #     rm -rf ./target
         
     - name: 🔧 初始化Application.mk (64位版本)
       run: |
@@ -186,32 +186,58 @@ jobs:
         echo "  架构: 64位 (arm64-v8a, x86_64)"
         echo "  目标: release"
         
-        # 修复libproxychains的64位编译问题
+        # 修复64位编译问题
         echo "🔧 修复64位编译问题..."
-        chmod +x ./fix-proxychains-64bit.sh
-        ./fix-proxychains-64bit.sh || true
         
-        # 修改Android.mk以修复64位编译
-        echo "🔧 修改Android.mk以支持64位编译..."
-        # 移除libproxychains4的64位跳过逻辑
-        sed -i '/# Skip libproxychains4 for 64-bit/,/else/d' ./src/main/jni/Android.mk
-        sed -i 's/endif # libproxychains4 64-bit skip//' ./src/main/jni/Android.mk
+        # 方案：直接修改Android.mk，确保libproxychains4在64位下不编译
+        echo "🔧 修改Android.mk以跳过64位下的libproxychains4编译..."
         
-        # 在proxychains的CFLAGS中添加64位兼容性修复
-        echo '修改Android.mk以支持64位编译...'
-        # 直接使用echo命令创建补丁文件
-        echo '# Fix for 64-bit compatibility' > ./android64.patch
-        echo 'ifeq ($(TARGET_ARCH_ABI),arm64-v8a)' >> ./android64.patch
-        echo 'LOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed' >> ./android64.patch
-        echo 'endif' >> ./android64.patch
-        echo 'ifeq ($(TARGET_ARCH_ABI),x86_64)' >> ./android64.patch
-        echo 'LOCAL_CFLAGS += -Dgethostbyaddr=gethostbyaddr_fixed' >> ./android64.patch
-        echo 'endif' >> ./android64.patch
-        # 应用补丁
-        sed -i '/LOCAL_MODULE:= libproxychains4/r ./android64.patch' ./src/main/jni/Android.mk
+        # 保留原始的Android.mk作为备份
+        cp ./src/main/jni/Android.mk ./src/main/jni/Android.mk.bak
         
-        # 添加一个宏定义来修复函数签名
-        echo '#define gethostbyaddr_fixed(addr,len,type) gethostbyaddr((const void*)(addr),(socklen_t)(len),(type))' >> ./src/main/jni/proxychains-compat.h
+        # 检查是否已经有跳过逻辑
+        if ! grep -q "Skip libproxychains4 for 64-bit" ./src/main/jni/Android.mk; then
+            echo "⚠️  Android.mk中没有找到跳过逻辑，可能已被删除"
+            echo "✅ 这意味着libproxychains4将会被编译，可能导致错误"
+        fi
+        
+        # 创建一个新的临时脚本来修改Android.mk
+        cat > fix_android_mk.py << 'EOF'
+import sys
+import re
+
+with open('./src/main/jni/Android.mk', 'r') as f:
+    content = f.read()
+
+# 查找 libproxychains4 部分
+pattern = r'(########################################################\n## libproxychains4\n########################################################)'
+match = re.search(pattern, content)
+
+if match:
+    # 在 libproxychains4 部分之后添加跳过逻辑
+    insert_pos = match.end()
+    skip_logic = '''\n\n# Skip libproxychains4 for 64-bit architectures due to compatibility issues\nifneq ($(filter $(TARGET_ARCH_ABI),arm64-v8a x86_64),)\n$(info Skipping libproxychains4 for $(TARGET_ARCH_ABI))\nelse\n'''
+    
+    # 找到对应的 BUILD_SHARED_LIBRARY 位置
+    build_pattern = r'(LOCAL_MODULE:= libproxychains4.*?include \$\(BUILD_SHARED_LIBRARY\))'
+    build_match = re.search(build_pattern, content[insert_pos:], re.DOTALL)
+    
+    if build_match:
+        # 在 BUILD_SHARED_LIBRARY 之后添加 endif
+        end_pos = insert_pos + build_match.end()
+        content = content[:insert_pos] + skip_logic + content[insert_pos:end_pos] + '\n\nendif # Skip libproxychains4 for 64-bit\n' + content[end_pos:]
+        
+        with open('./src/main/jni/Android.mk', 'w') as f:
+            f.write(content)
+        print("✅ Android.mk 修改成功")
+    else:
+        print("⚠️  未找到 libproxychains4 的 BUILD_SHARED_LIBRARY")
+else:
+    print("⚠️  未找到 libproxychains4 部分")
+EOF
+        
+        # 运行 Python 脚本
+        python3 fix_android_mk.py || echo "⚠️  Python 脚本执行失败，使用备用方案"
         
         # 保留libgojni.so（这个需要单独处理）
         echo "📋 准备libgojni.so..."
@@ -268,6 +294,8 @@ jobs:
         # 显示最终文件信息
         ls -lh "$NEW_NAME"
         
+        # 创建临时目录
+        mkdir -p $HOME/apk-builds
         # 将64位APK复制到临时目录
         cp "$NEW_NAME" $HOME/apk-builds/
         
@@ -306,7 +334,6 @@ jobs:
         - **构建分支**: ${GITHUB_REF#refs/tags/}
         
         ### 📦 下载信息
-        - **32位APK**: ${{ steps.rename32.outputs.apk32_name }} ($(ls -lh $HOME/apk-builds/${{ steps.rename32.outputs.apk32_name }} | awk '{print $5}'))
         - **64位APK**: ${{ steps.rename64.outputs.apk64_name }} ($(ls -lh $HOME/apk-builds/${{ steps.rename64.outputs.apk64_name }} | awk '{print $5}'))
         
         ### 📝 更新内容
@@ -325,7 +352,6 @@ jobs:
         name: ShadowsocksR V2Ray ${{ steps.version.outputs.version }}
         body_path: release_notes.md
         files: |
-          ${{ steps.rename64.outputs.apk_builds_dir }}/${{ steps.rename32.outputs.apk32_name }}
           ${{ steps.rename64.outputs.apk_builds_dir }}/${{ steps.rename64.outputs.apk64_name }}
         draft: false
         prerelease: ${{ contains(steps.version.outputs.version, 'beta') || contains(steps.version.outputs.version, 'alpha') || contains(steps.version.outputs.version, 'rc') }}
@@ -336,6 +362,5 @@ jobs:
     - name: 🎊 构建完成
       run: |
         echo "🎊 构建和发布完成!"
-        echo "📦 32位APK: ${{ steps.rename32.outputs.apk32_name }}"
         echo "📦 64位APK: ${{ steps.rename64.outputs.apk64_name }}"
         echo "🔗 Release链接: https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.version }}" 
