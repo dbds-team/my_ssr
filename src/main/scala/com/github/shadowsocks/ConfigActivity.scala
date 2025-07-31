@@ -74,7 +74,7 @@ class ConfigActivity extends AppCompatActivity{
         displayFragment(new SubscriptionFragment())
       }
       case Some(Key.FRAGMENT_ROUTE_RULE) => {
-        toolbar.setTitle(R.string.route_rule)
+        toolbar.setTitle(R.string.route_list)
         displayFragment(new RouteRuleFragment())
       }
       case Some(Key.FRAGMENT_V2RAY_CONFIG) => {
