@@ -239,6 +239,14 @@ LOCAL_SRC_FILES := $(addprefix libevent/, $(LIBEVENT_SOURCES))
 LOCAL_CFLAGS := -O2 -I$(LOCAL_PATH)/libevent \
 	-I$(LOCAL_PATH)/libevent/include \
 
+# Fix arc4random_buf conflict on 64-bit Android 21+
+ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
+LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1
+endif
+ifeq ($(TARGET_ARCH_ABI),x86_64)
+LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1
+endif
+
 include $(BUILD_STATIC_LIBRARY)
 
 ########################################################
