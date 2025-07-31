@@ -1544,7 +1544,9 @@ final class ProfileManagerActivity extends AppCompatActivity with OnMenuItemClic
 //      true
 //    }
     case R.id.action_add_v2ray_config =>
-      startActivity(new Intent(this, classOf[ConfigActivity]))
+      val intent = new Intent(this, classOf[ConfigActivity])
+      intent.putExtra(Key.FRAGMENT_NAME, Key.FRAGMENT_V2RAY_CONFIG)
+      startActivity(intent)
       true
     case R.id.action_speed_test =>
       val intent = new Intent(this, classOf[DownloadTestService])

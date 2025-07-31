@@ -45,7 +45,7 @@ class ConfigActivity extends AppCompatActivity{
     setContentView(R.layout.layout_config)
 
     toolbar = findViewById(R.id.toolbar).asInstanceOf[Toolbar]
-    toolbar.setTitle(R.string.v2ray_config)
+    // Don't set title here, let fragment set it
     toolbar.setNavigationIcon(R.drawable.ic_navigation_close)
     toolbar.setNavigationOnClickListener(_ => onBackPressed())
     // start fragment
@@ -69,9 +69,16 @@ class ConfigActivity extends AppCompatActivity{
     // Debug log
     Log.d("ConfigActivity", s"navigateToFragment called with name: $name")
     name match {
-      case Some(Key.FRAGMENT_SUBSCRIPTION) => displayFragment(new SubscriptionFragment())
-      case Some(Key.FRAGMENT_ROUTE_RULE) => displayFragment(new RouteRuleFragment())
+      case Some(Key.FRAGMENT_SUBSCRIPTION) => {
+        toolbar.setTitle(R.string.ssrsub_list)
+        displayFragment(new SubscriptionFragment())
+      }
+      case Some(Key.FRAGMENT_ROUTE_RULE) => {
+        toolbar.setTitle(R.string.route_rule)
+        displayFragment(new RouteRuleFragment())
+      }
       case Some(Key.FRAGMENT_V2RAY_CONFIG) => {
+        toolbar.setTitle(R.string.v2ray_config)
         val v2rayConfigFragment = new V2RayConfigFragment()
         val bundle = new Bundle()
         bundle.putInt(Key.EXTRA_PROFILE_ID, getIntent.getIntExtra(Key.EXTRA_PROFILE_ID, -1))
@@ -80,13 +87,17 @@ class ConfigActivity extends AppCompatActivity{
       }
       case None => {
         // Default case when no fragment is specified
+        toolbar.setTitle(R.string.v2ray_config)
         val v2rayConfigFragment = new V2RayConfigFragment()
         val bundle = new Bundle()
         bundle.putInt(Key.EXTRA_PROFILE_ID, getIntent.getIntExtra(Key.EXTRA_PROFILE_ID, -1))
         v2rayConfigFragment.setArguments(bundle)
         displayFragment(v2rayConfigFragment)
       }
-      case Some(unknown) => Log.e("ConfigActivity", s"Unknown fragment name: $unknown")
+      case Some(unknown) => {
+        Log.e("ConfigActivity", s"Unknown fragment name: $unknown")
+        toolbar.setTitle(R.string.app_name)
+      }
     }
   }
 
