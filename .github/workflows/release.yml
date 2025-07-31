@@ -202,7 +202,7 @@ jobs:
         fi
         
         # 创建一个新的临时脚本来修改Android.mk
-        cat > fix_android_mk.py << 'EOF'
+        cat > fix_android_mk.py << 'PYTHON_EOF'
 import sys
 import re
 
@@ -234,7 +234,7 @@ if match:
         print("⚠️  未找到 libproxychains4 的 BUILD_SHARED_LIBRARY")
 else:
     print("⚠️  未找到 libproxychains4 部分")
-EOF
+PYTHON_EOF
         
         # 运行 Python 脚本
         python3 fix_android_mk.py || echo "⚠️  Python 脚本执行失败，使用备用方案"
