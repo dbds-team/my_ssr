@@ -36,6 +36,7 @@ class ConfigActivity extends AppCompatActivity{
   private var profile: Profile = _
   var toolbar: Toolbar = _
   private val nameValues = mutable.Map[String, String]()
+  private var currentFragmentName: String = _
 
   override def onCreate(savedInstanceState: Bundle): Unit = {
     super.onCreate(savedInstanceState)
@@ -48,9 +49,25 @@ class ConfigActivity extends AppCompatActivity{
     // Don't set title here, let fragment set it
     toolbar.setNavigationIcon(R.drawable.ic_navigation_close)
     toolbar.setNavigationOnClickListener(_ => onBackPressed())
+    
     // start fragment
-    val fragmentName = Option(getIntent.getStringExtra(Key.FRAGMENT_NAME))
+    // Restore fragment name from savedInstanceState if available
+    val fragmentName = if (savedInstanceState != null && savedInstanceState.containsKey(Key.FRAGMENT_NAME)) {
+      currentFragmentName = savedInstanceState.getString(Key.FRAGMENT_NAME)
+      Option(currentFragmentName)
+    } else {
+      currentFragmentName = getIntent.getStringExtra(Key.FRAGMENT_NAME)
+      Option(currentFragmentName)
+    }
     navigateToFragment(fragmentName)
+  }
+  
+  override def onSaveInstanceState(outState: Bundle): Unit = {
+    super.onSaveInstanceState(outState)
+    // Save current fragment name to handle configuration changes
+    if (currentFragmentName != null) {
+      outState.putString(Key.FRAGMENT_NAME, currentFragmentName)
+    }
   }
 
   override def onBackPressed(): Unit = {
