@@ -66,17 +66,27 @@ class ConfigActivity extends AppCompatActivity{
   }
 
   def navigateToFragment (name: Option[String]): Unit = {
+    // Debug log
+    Log.d("ConfigActivity", s"navigateToFragment called with name: $name")
     name match {
-      case Some(Key.FRAGMENT_V2RAY_CONFIG) | None => {
+      case Some(Key.FRAGMENT_SUBSCRIPTION) => displayFragment(new SubscriptionFragment())
+      case Some(Key.FRAGMENT_ROUTE_RULE) => displayFragment(new RouteRuleFragment())
+      case Some(Key.FRAGMENT_V2RAY_CONFIG) => {
         val v2rayConfigFragment = new V2RayConfigFragment()
         val bundle = new Bundle()
         bundle.putInt(Key.EXTRA_PROFILE_ID, getIntent.getIntExtra(Key.EXTRA_PROFILE_ID, -1))
         v2rayConfigFragment.setArguments(bundle)
         displayFragment(v2rayConfigFragment)
       }
-      case Some(Key.FRAGMENT_ROUTE_RULE) => displayFragment(new RouteRuleFragment())
-      case Some(Key.FRAGMENT_SUBSCRIPTION) => displayFragment(new SubscriptionFragment())
-      case _ =>
+      case None => {
+        // Default case when no fragment is specified
+        val v2rayConfigFragment = new V2RayConfigFragment()
+        val bundle = new Bundle()
+        bundle.putInt(Key.EXTRA_PROFILE_ID, getIntent.getIntExtra(Key.EXTRA_PROFILE_ID, -1))
+        v2rayConfigFragment.setArguments(bundle)
+        displayFragment(v2rayConfigFragment)
+      }
+      case Some(unknown) => Log.e("ConfigActivity", s"Unknown fragment name: $unknown")
     }
   }
 
