@@ -230,9 +230,16 @@ LIBEVENT_SOURCES := \
     event_tagging.c evmap.c \
 	evrpc.c evthread.c \
 	evthread_pthread.c evutil.c \
-	evutil_rand.c http.c \
+	http.c \
 	listener.c log.c poll.c \
 	select.c signal.c strlcpy.c
+
+# Add evutil_rand.c only for 32-bit architectures
+ifneq ($(filter $(TARGET_ARCH_ABI),arm64-v8a x86_64),)
+# 64-bit: skip evutil_rand.c as it conflicts with system arc4random_buf
+else
+LIBEVENT_SOURCES += evutil_rand.c
+endif
 
 LOCAL_MODULE := event
 LOCAL_SRC_FILES := $(addprefix libevent/, $(LIBEVENT_SOURCES))
@@ -241,10 +248,10 @@ LOCAL_CFLAGS := -O2 -I$(LOCAL_PATH)/libevent \
 
 # Fix arc4random_buf conflict on 64-bit Android 21+
 ifeq ($(TARGET_ARCH_ABI),arm64-v8a)
-LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1
+LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1 -DHAVE_ARC4RANDOM=1
 endif
 ifeq ($(TARGET_ARCH_ABI),x86_64)
-LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1
+LOCAL_CFLAGS += -DHAVE_ARC4RANDOM_BUF=1 -DHAVE_ARC4RANDOM=1
 endif
 
 include $(BUILD_STATIC_LIBRARY)
