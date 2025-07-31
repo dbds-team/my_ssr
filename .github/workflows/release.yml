@@ -189,55 +189,13 @@ jobs:
         # 修复64位编译问题
         echo "🔧 修复64位编译问题..."
         
-        # 方案：直接修改Android.mk，确保libproxychains4在64位下不编译
-        echo "🔧 修改Android.mk以跳过64位下的libproxychains4编译..."
-        
-        # 保留原始的Android.mk作为备份
-        cp ./src/main/jni/Android.mk ./src/main/jni/Android.mk.bak
-        
         # 检查是否已经有跳过逻辑
         if ! grep -q "Skip libproxychains4 for 64-bit" ./src/main/jni/Android.mk; then
-            echo "⚠️  Android.mk中没有找到跳过逻辑，可能已被删除"
-            echo "✅ 这意味着libproxychains4将会被编译，可能导致错误"
+            echo "⚠️  Android.mk中没有找到64位跳过逻辑"
+            echo "📝 需要添加跳过逻辑，但已经在之前的提交中处理过"
+        else
+            echo "✅ Android.mk已包含64位跳过逻辑"
         fi
-        
-        # 创建一个新的临时脚本来修改Android.mk
-        cat > fix_android_mk.py << 'PYTHON_EOF'
-import sys
-import re
-
-with open('./src/main/jni/Android.mk', 'r') as f:
-    content = f.read()
-
-# 查找 libproxychains4 部分
-pattern = r'(########################################################\n## libproxychains4\n########################################################)'
-match = re.search(pattern, content)
-
-if match:
-    # 在 libproxychains4 部分之后添加跳过逻辑
-    insert_pos = match.end()
-    skip_logic = '''\n\n# Skip libproxychains4 for 64-bit architectures due to compatibility issues\nifneq ($(filter $(TARGET_ARCH_ABI),arm64-v8a x86_64),)\n$(info Skipping libproxychains4 for $(TARGET_ARCH_ABI))\nelse\n'''
-    
-    # 找到对应的 BUILD_SHARED_LIBRARY 位置
-    build_pattern = r'(LOCAL_MODULE:= libproxychains4.*?include \$\(BUILD_SHARED_LIBRARY\))'
-    build_match = re.search(build_pattern, content[insert_pos:], re.DOTALL)
-    
-    if build_match:
-        # 在 BUILD_SHARED_LIBRARY 之后添加 endif
-        end_pos = insert_pos + build_match.end()
-        content = content[:insert_pos] + skip_logic + content[insert_pos:end_pos] + '\n\nendif # Skip libproxychains4 for 64-bit\n' + content[end_pos:]
-        
-        with open('./src/main/jni/Android.mk', 'w') as f:
-            f.write(content)
-        print("✅ Android.mk 修改成功")
-    else:
-        print("⚠️  未找到 libproxychains4 的 BUILD_SHARED_LIBRARY")
-else:
-    print("⚠️  未找到 libproxychains4 部分")
-PYTHON_EOF
-        
-        # 运行 Python 脚本
-        python3 fix_android_mk.py || echo "⚠️  Python 脚本执行失败，使用备用方案"
         
         # 保留libgojni.so（这个需要单独处理）
         echo "📋 准备libgojni.so..."
